@@ -1,5 +1,6 @@
 package com.allenliu.versionchecklib.core;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 
@@ -7,15 +8,16 @@ import com.allenliu.versionchecklib.core.http.AllenHttp;
 
 /**
  * Created by allenliu on 2017/8/15.
+ *{@link com.allenliu.versionchecklib.v2.AllenVersionChecker} use AllenVersionChecker of v2
  */
-
+@Deprecated
 public class AllenChecker {
     private static boolean isDebug = true;
-    private static Context globalContexst;
+    private static Context globalContext;
     private static VersionParams params;
 
-    public static void startVersionCheck(Context context, VersionParams versionParams) {
-        globalContexst = context;
+    public static void startVersionCheck(Application context, VersionParams versionParams) {
+        globalContext = context;
         params = versionParams;
         Intent intent = new Intent(context, versionParams.getService());
         intent.putExtra(AVersionService.VERSION_PARAMS_KEY, versionParams);
@@ -36,17 +38,20 @@ public class AllenChecker {
      */
     public static void cancelMission() {
         AllenHttp.getHttpClient().dispatcher().cancelAll();
-        if (globalContexst != null && params != null) {
-            Intent intent = new Intent(globalContexst, params.getService());
-            globalContexst.stopService(intent);
+        if (globalContext != null && params != null) {
+            Intent intent = new Intent(globalContext, params.getService());
+            globalContext.stopService(intent);
         }
         if (VersionDialogActivity.instance != null) {
             VersionDialogActivity.instance.finish();
         }
-        globalContexst = null;
+        globalContext = null;
         params = null;
 
     }
 
+    public static Context getGlobalContext() {
+        return globalContext;
+    }
 
 }
